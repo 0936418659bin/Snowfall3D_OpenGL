@@ -1,0 +1,82 @@
+# Simple pine tree OBJ model for testing
+# Created for Snowfall3D project
+
+# Vertices for trunk (tapered cylinder)
+# Base of trunk (radius 0.3)
+v 0.3 0.0 0.0
+v 0.0 0.0 0.3
+v -0.3 0.0 0.0
+v 0.0 0.0 -0.3
+
+# Top of trunk (radius 0.1)
+v 0.1 1.5 0.0
+v 0.0 1.5 0.1
+v -0.1 1.5 0.0
+v 0.0 1.5 -0.1
+
+# Foliage cone 1 (base)
+v 0.8 1.0 0.0
+v 0.0 1.0 0.8
+v -0.8 1.0 0.0
+v 0.0 1.0 -0.8
+
+# Foliage cone 1 (mid)
+v 0.4 1.8 0.0
+v 0.0 1.8 0.4
+v -0.4 1.8 0.0
+v 0.0 1.8 -0.4
+
+# Foliage cone 1 (top)
+v 0.0 2.3 0.0
+
+# Foliage cone 2 (base)
+v 0.6 2.2 0.0
+v 0.0 2.2 0.6
+v -0.6 2.2 0.0
+v 0.0 2.2 -0.6
+
+# Foliage cone 2 (top)
+v 0.0 2.9 0.0
+
+# Faces
+# Trunk sides
+f 1 2 6
+f 2 6 5
+f 2 3 7
+f 2 7 6
+f 3 4 8
+f 3 8 7
+f 4 1 5
+f 4 5 8
+
+# Foliage cone 1 - bottom ring
+f 9 10 14
+f 10 14 13
+f 10 11 15
+f 10 15 14
+f 11 12 16
+f 11 16 15
+f 12 9 13
+f 12 13 16
+
+# Foliage cone 1 - to top
+f 13 14 17
+f 14 15 17
+f 15 16 17
+f 16 13 17
+
+# Foliage cone 2 - bottom ring
+f 18 19 23
+f 19 23 22
+f 19 20 24
+f 19 24 23
+f 20 21 25
+f 20 25 24
+f 21 18 22
+f 21 22 25
+
+# Foliage cone 2 - to top
+f 22 23 26
+f 23 24 26
+f 24 25 26
+f 25 22 26

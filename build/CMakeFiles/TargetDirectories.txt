@@ -1,0 +1,4 @@
+E:/OpenGL/GiuaKi/build/CMakeFiles/glad.dir
+E:/OpenGL/GiuaKi/build/CMakeFiles/Snowfall3D.dir
+E:/OpenGL/GiuaKi/build/CMakeFiles/ALL_BUILD.dir
+E:/OpenGL/GiuaKi/build/CMakeFiles/ZERO_CHECK.dir

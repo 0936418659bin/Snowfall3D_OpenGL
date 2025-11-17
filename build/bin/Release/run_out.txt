@@ -1,0 +1,21 @@
+[Vegetation] Generated 180 tree instances.
+Loaded tree model: assets/tree.obj (126 indices)
+
+=== SNOWFALL 3D - COMPUTER GRAPHICS PROJECT ===
+Controls:
+  WASD - Move camera
+  Mouse - Look around
+  Space/LShift - Move up/down
+  Scroll - Zoom in/out
+  ESC - Exit
+
+  P - Pause weather   R - Cycle precipitation (Snow/Mix/Rain)
+  [ / ] - Intensity down/up    J / L - Wind left/right
+  I / K - Increase/Decrease particle rate
+  Z / X - Increase/Decrease snowfall (particles/sec)
+  M / N - Increase/Decrease snow melt speed
+  O - Toggle projection (Perspective/Orthographic)
+  H - Toggle on-screen stats (window title)
+  T - Advance time by +1 hour
+  Y - Toggle day/night (12h / 0h)
+  B - Toggle auto time progression
