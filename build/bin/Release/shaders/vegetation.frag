@@ -8,6 +8,13 @@ uniform vec3 sunDir;
 
 out vec4 FragColor;
 
+// New: model-space Y to determine trunk vs foliage
+in float modelY;
+uniform vec3 trunkColor;
+uniform vec3 foliageColor;
+uniform float foliageStart; // model-space Y where foliage begins
+uniform float foliageBlend; // smooth blend range
+
 void main()
 {
     // Normalize normals and sun direction
@@ -23,6 +30,11 @@ void main()
     
     // Combine lighting
     vec3 finalColor = ambient + diffuse;
+
+    // Blend between trunk and foliage colors using model-space Y
+    float t = smoothstep(foliageStart, foliageStart + foliageBlend, modelY);
+    vec3 mixedBase = mix(trunkColor, foliageColor, t);
+    finalColor *= mixedBase;
     
     // Slight height-based fog (distant = slightly lighter)
     float fogFactor = clamp((fragPos.y - 5.0) / 50.0, 0.0, 0.3);

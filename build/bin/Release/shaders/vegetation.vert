@@ -18,6 +18,7 @@ uniform vec3 windDir;
 
 out vec3 fragNormal;
 out vec3 fragPos;
+out float modelY;
 
 // Simple wind sway function (uses per-instance seed)
 vec3 ApplyWind(vec3 pos, float seed, float windTime) {
@@ -40,6 +41,8 @@ void main()
     // Transform to world
     vec4 worldPos = model * vec4(swayedPos, 1.0);
     fragPos = vec3(worldPos);
+    // Pass model-space Y for color blending (foliage vs trunk)
+    modelY = position.y;
 
     // Approximate normal
     fragNormal = normalize(mat3(model) * normalize(position));
