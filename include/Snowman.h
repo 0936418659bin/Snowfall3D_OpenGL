@@ -22,7 +22,7 @@ private:
     Terrain *terrain;
 
     void InitSphere(int latSegments = 12, int longSegments = 12);
-    void DrawSphere(const glm::mat4 &model, Shader &shader);
+    void DrawSphere(const glm::mat4 &model, Shader &shader, const glm::vec3 &color);
 };
 
 #endif

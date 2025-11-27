@@ -114,12 +114,13 @@ int main()
     snowman.SetTerrain(&terrain);
     snowman.SetPosition(glm::vec3(5.0f, 0.0f, -3.0f));
     vegetation.Generate(terrain, 1200, 180); // generate grass + trees (instanced)
-    
+
     // Try to load tree model from Assimp
     // Prefer the runtime assets folder (relative to executable), then project assets
     if (!vegetation.LoadTreeModel("assets/tree.obj") &&
         !vegetation.LoadTreeModel("tree.obj") &&
-        !vegetation.LoadTreeModel("../assets/tree.obj")) {
+        !vegetation.LoadTreeModel("../assets/tree.obj"))
+    {
         std::cout << "Note: Tree model file not found. Using procedural trees." << std::endl;
     }
 
@@ -170,6 +171,15 @@ int main()
         snowSystem.Update(deltaTime, camera.Position);
         terrain.Update(deltaTime);
         light.Update(deltaTime);
+
+        // Collision: Keep camera above terrain (don't fall through ground)
+        float terrainY = terrain.GetHeight(camera.Position.x, camera.Position.z);
+        float minHeight = terrainY + 0.5f; // Camera min height above ground
+        if (camera.Position.y < minHeight)
+        {
+            camera.Position.y = minHeight;
+        }
+
         // Advance sky time if auto enabled
         if (gAutoTime)
         {
@@ -192,50 +202,44 @@ int main()
         skyboxShader.setMat4("projection", projection);
         skybox.Render(skyboxShader, view, projection);
 
-        // Render clouds with dedicated cloud shader
+        // CLOUD RENDERING DISABLED
+        // (Uncomment below to re-enable clouds if needed)
+        /*
         cloudShader.use();
         cloudShader.setMat4("projection", projection);
         cloudShader.setMat4("view", view);
-        // pass sun direction and time (skybox provides it)
         cloudShader.setVec3("sunDir", gSkybox ? gSkybox->GetSunDirection() : glm::vec3(0, 1, 0));
         cloudShader.setFloat("time", gSkybox ? gSkybox->GetTimeOfDay() : 0.0f);
-        // Map particle system intensity -> cloud coverage. More intense precipitation => denser clouds.
         float intensity = snowSystem.GetIntensity();
         auto pm = snowSystem.GetPrecipitationMode();
-        // baseline coverage from intensity (tuned empirically)
         float coverage = glm::clamp(intensity / 3.0f, 0.05f, 1.0f);
         if (pm == ParticleSystem::PrecipitationMode::Snow)
-        {
-            // snow mode makes clouds thicker
             coverage = glm::clamp(coverage * 1.2f, 0.0f, 1.0f);
-        }
         else if (pm == ParticleSystem::PrecipitationMode::Mix)
-        {
             coverage = glm::clamp(coverage * 0.9f, 0.0f, 1.0f);
-        }
         else
-        {
-            // rain: lower cloud coverage for snowfall scenario
             coverage = glm::clamp(coverage * 0.6f, 0.0f, 1.0f);
-        }
         clouds.SetCoverage(coverage);
         cloudShader.setFloat("coverage", coverage);
         clouds.Update(deltaTime, snowSystem.GetWind());
         clouds.Render(cloudShader, camera);
+        */
 
         // Render vegetation (instanced) and snowman
         vegetationShader.use();
         vegetationShader.setMat4("projection", projection);
         vegetationShader.setMat4("view", view);
         vegetationShader.setFloat("time", (float)glfwGetTime());
-        vegetationShader.setVec3("sunDir", gSkybox ? gSkybox->GetSunDirection() : glm::vec3(0,1,0));
+        vegetationShader.setVec3("sunDir", gSkybox ? gSkybox->GetSunDirection() : glm::vec3(0, 1, 0));
         // pass wind direction to vegetation shader for sway
         vegetationShader.setVec3("windDir", snowSystem.GetWind());
         // Set trunk/foliage colors and blend parameters
-        vegetationShader.setVec3("trunkColor", glm::vec3(0.45f, 0.32f, 0.20f)); // brown
-        vegetationShader.setVec3("foliageColor", glm::vec3(0.12f, 0.5f, 0.17f)); // green
-        vegetationShader.setFloat("foliageStart", 0.6f);
-        vegetationShader.setFloat("foliageBlend", 0.6f);
+        // Trunk: brown at bottom, blend to green at top
+        // Lower foliageStart and increase blend range for smoother transition
+        vegetationShader.setVec3("trunkColor", glm::vec3(0.5f, 0.35f, 0.18f));    // slightly lighter brown bark
+        vegetationShader.setVec3("foliageColor", glm::vec3(0.15f, 0.55f, 0.20f)); // slightly brighter green
+        vegetationShader.setFloat("foliageStart", 0.35f);                         // foliage starts earlier (more overlap with trunk)
+        vegetationShader.setFloat("foliageBlend", 0.45f);                         // wider blend range for smooth transition
         vegetation.Render(vegetationShader);
 
         // Render leaf cards (billboarded quads) with separate shader
@@ -243,10 +247,15 @@ int main()
         leafShader.setMat4("projection", projection);
         leafShader.setMat4("view", view);
         leafShader.setFloat("time", (float)glfwGetTime());
-        leafShader.setVec3("sunDir", gSkybox ? gSkybox->GetSunDirection() : glm::vec3(0,1,0));
+        leafShader.setVec3("sunDir", gSkybox ? gSkybox->GetSunDirection() : glm::vec3(0, 1, 0));
         leafShader.setVec3("camRight", camera.Right);
         leafShader.setVec3("camUp", camera.Up);
         vegetation.RenderLeaves(leafShader, camera);
+
+        // Render snow accumulation on trees (with increasing amount as time progresses)
+        float snowAccumulation = fmod((float)glfwGetTime() * 0.05f, 1.0f); // cycles 0-1 over time
+        terrainShader.use();
+        vegetation.RenderSnowOnTrees(terrainShader, snowAccumulation);
 
         terrainShader.use();
         snowman.Render(terrainShader);

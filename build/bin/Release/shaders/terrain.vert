@@ -9,6 +9,8 @@ out vec3 Normal;
 out vec2 TexCoord;
 out float SnowDepth;
 out float fogFactor;
+out vec3 Tangent;
+out vec3 Bitangent;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -19,15 +21,27 @@ void main() {
     vec3 adjustedPos = aPos + aNormal * aSnowDepth;
     
     FragPos = vec3(model * vec4(adjustedPos, 1.0));
-    Normal = mat3(transpose(inverse(model))) * aNormal;
-    TexCoord = aTexCoord;
+    Normal = normalize(mat3(transpose(inverse(model))) * aNormal);
+    TexCoord = aTexCoord * 4.0;
     SnowDepth = aSnowDepth;
+    
+    // Compute tangent and bitangent for normal mapping
+    vec3 Q1 = dFdx(FragPos);
+    vec3 Q2 = dFdy(FragPos);
+    vec2 st1 = dFdx(TexCoord);
+    vec2 st2 = dFdy(TexCoord);
+    
+    vec3 N = normalize(Normal);
+    vec3 T = normalize(Q1 * st2.t - Q2 * st1.t);
+    T = normalize(T - dot(T, N) * N);
+    Tangent = T;
+    Bitangent = cross(N, T);
     
     gl_Position = projection * view * vec4(FragPos, 1.0);
     
-    // Fog calculation
+    // Fog calculation with better exponential falloff
     float distance = length(FragPos - vec3(inverse(view)[3]));
-    float fogDensity = 0.015;
-    fogFactor = exp(-fogDensity * distance);
+    float fogDensity = 0.012;
+    fogFactor = exp(-fogDensity * distance * fogDensity * distance);
     fogFactor = clamp(fogFactor, 0.0, 1.0);
 }

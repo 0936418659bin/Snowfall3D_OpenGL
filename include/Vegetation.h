@@ -18,6 +18,7 @@ public:
 
     void Generate(const Terrain &terrain, unsigned int grassCount = 1000, unsigned int treeCount = 100);
     void Render(Shader &shader);
+    void RenderSnowOnTrees(Shader &shader, float snowAmount = 0.5f);
     bool LoadTreeModel(const std::string &modelPath);
 
     void SetSnowHideThreshold(float t) { hideThreshold = t; }
@@ -33,8 +34,8 @@ private:
     unsigned int treeVAO, treeVBO, treeVertCount;
     unsigned int trunkVAO, trunkVBO, trunkVertCount;
     unsigned int modelVAO, modelVBO, modelEBO, modelVertCount; // For loaded models
-    unsigned int instanceVBO; // per-instance model matrices
-    unsigned int instanceSeedVBO; // per-instance seed/variation
+    unsigned int instanceVBO;                                  // per-instance model matrices
+    unsigned int instanceSeedVBO;                              // per-instance seed/variation
     unsigned int instanceCount;
     // Leaf card geometry (billboards)
     unsigned int leafVAO, leafVBO, leafVertCount;

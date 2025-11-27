@@ -20,7 +20,9 @@ out vec3 fragNormal;
 out vec3 fragPos;
 out float modelY;
 
-// Simple wind sway function (uses per-instance seed)
+// Wind sway DISABLED - trees stand still
+// To re-enable wind, uncomment the function below and replace ApplyWind call
+/*
 vec3 ApplyWind(vec3 pos, float seed, float windTime) {
     float heightFactor = clamp(pos.y / 2.5, 0.0, 1.0);
     float base = windTime * 0.8 + seed * 10.0;
@@ -28,15 +30,15 @@ vec3 ApplyWind(vec3 pos, float seed, float windTime) {
     float swayZ = cos(base * 1.1 + pos.z * 0.25) * 0.09;
     return vec3(swayX, 0.0, swayZ) * (1.0 - heightFactor);
 }
+*/
 
 void main()
 {
     // Reconstruct instance model matrix
     mat4 model = mat4(instanceMat0, instanceMat1, instanceMat2, instanceMat3);
 
-    // Apply wind sway using per-instance seed
-    vec3 swayOffset = ApplyWind(position, instanceSeed, time);
-    vec3 swayedPos = position + swayOffset;
+    // No wind sway - trees stay still
+    vec3 swayedPos = position;
 
     // Transform to world
     vec4 worldPos = model * vec4(swayedPos, 1.0);
